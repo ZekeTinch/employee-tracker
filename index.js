@@ -90,13 +90,15 @@ function mainChoices() {
         } else if (choice === 'ADD_ROLE') {
             prompt([{
                 type: 'input',
-                name: 'name'
+                name: 'name',
+                salary: 'salary',
+                department: 'department'
             }]).then((answers) => {
                 // sql statement to add department
 
-                const sql =`INSERT INTO role (role_title)
-                VALUES ($1)`;
-                const params = [answers.name];
+                const sql =`INSERT INTO role (role_title, role_salary, department_id)
+                VALUES ($1, $2, $3)`;
+                const params = [answers.name.salary.department];
             
                 pool.query(sql, params, (err, result) => {
                     console.log('\n');
@@ -112,7 +114,7 @@ function mainChoices() {
             }]).then((answers) => {
                 // sql statement to add department
 
-                const sql =`INSERT INTO employee (first_name, last_name)
+                const sql =`INSERT INTO employee (first_name, last_name, role_id, manager_id)
                 VALUES ($1)`;
                 const params = [answers.name];
             
@@ -134,18 +136,67 @@ function viewEmployees() {
 
     pool.query(sql, params, (err, result) => {
         console.log('\n');
-        console.table(result);
+        console.table(result.rows);
         console.log('\n');
         mainChoices();
     })
 }
 
 function viewRoles() {
-    db.findAllRoles()
-    .then(({roles}) => {
-        let role = roles;
+    const sql =`SELECT * FROM role`;
+    const params = [];
+
+    pool.query(sql, params, (err, result) => {
         console.log('\n');
-        console.table(role);
+        console.table(result.rows);
+        console.log('\n');
+        mainChoices();
     })
-    .then(() => mainChoices())
+
 }
+
+
+function viewDepartments() {
+    const sql =`SELECT * FROM department`;
+    const params = [];
+
+    pool.query(sql, params, (err, result) => {
+        console.log('\n');
+        console.table(result.rows);
+        console.log('\n');
+        mainChoices();
+    })
+}
+
+
+
+// const updateEmployee = () => {
+//     const sql = 'SELECT * FROM employee';
+
+//     pool.query(sql, (err, {rows}) => {
+//         if (err) {
+//             console.log(err);
+//         }
+//         const employees = rows.map((person) => {
+//             return {
+//                 value: person.id,
+//                 name: `${person.first_name} ${person.last_name}`
+//             }
+//         });
+//         console.log(employees);
+
+//         inquirer.prompt([
+//             {
+//                 type: 'list',
+//                 name: 'employee',
+//                 choices: employees
+//             }
+//         ]).then((val) => {
+//             const employeeID = val.employee
+
+//             const sql = 'SELECT * FROM roles';
+
+
+//         })
+//     })
+// }
